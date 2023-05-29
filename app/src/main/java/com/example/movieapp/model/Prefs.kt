@@ -28,4 +28,8 @@ class Prefs(context: Context) {
     fun isLoggedIn(): Boolean {
         return getUserName().isNotEmpty() && getPassword().isNotEmpty()
     }
+    
+    fun wipe() {
+        storage.edit().clear().apply()
+    }
 }
