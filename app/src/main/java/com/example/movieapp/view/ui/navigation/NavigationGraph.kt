@@ -8,7 +8,6 @@ import com.example.movieapp.view.ui.LoginApplication.Companion.prefs
 import com.example.movieapp.view.ui.screens.detail.DetailScreen
 import com.example.movieapp.view.ui.screens.favorites.FavoritesScreen
 import com.example.movieapp.view.ui.screens.login.LoginScreen
-import com.example.movieapp.view.ui.screens.logout.LogoutScreen
 import com.example.movieapp.view.ui.screens.search.SearchScreen
 import com.example.movieapp.viewmodel.LoginViewModel
 
@@ -28,9 +27,6 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable("detail") {
             DetailScreen()
-        }
-        composable("logout") {
-            LogoutScreen()
         }
     }
 }
