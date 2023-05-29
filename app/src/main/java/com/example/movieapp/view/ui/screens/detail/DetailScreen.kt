@@ -5,5 +5,10 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun DetailScreen() {
+    DetailContent()
+}
+
+@Composable
+fun DetailContent() {
     Text(text = "Detail")
 }
