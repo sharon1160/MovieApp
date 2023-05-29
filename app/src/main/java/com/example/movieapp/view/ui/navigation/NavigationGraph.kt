@@ -15,10 +15,6 @@ import com.example.movieapp.viewmodel.LoginViewModel
 fun NavigationGraph(navController: NavHostController) {
     val startRoute: String = getStartDestination()
     NavHost(navController, startDestination = startRoute) {
-        composable("login") {
-            val loginViewModel = LoginViewModel()
-            LoginScreen(loginViewModel, navController)
-        }
         composable(NavigationItem.Search.route) {
             SearchScreen()
         }
@@ -27,6 +23,10 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable("detail") {
             DetailScreen()
+        }
+        composable("login") {
+            val loginViewModel = LoginViewModel()
+            LoginScreen(loginViewModel, navController)
         }
     }
 }
