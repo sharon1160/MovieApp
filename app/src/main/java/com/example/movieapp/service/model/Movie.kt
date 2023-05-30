@@ -11,4 +11,6 @@ data class Movie(
 
     @SerializedName("Year")
     var year: String,
+
+    var isFavorite: Boolean = false
 )
