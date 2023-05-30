@@ -10,13 +10,15 @@ import com.example.movieapp.view.ui.screens.favorites.FavoritesScreen
 import com.example.movieapp.view.ui.screens.login.LoginScreen
 import com.example.movieapp.view.ui.screens.search.SearchScreen
 import com.example.movieapp.viewmodel.LoginViewModel
+import com.example.movieapp.viewmodel.SearchViewModel
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     val startRoute: String = getStartDestination()
     NavHost(navController, startDestination = startRoute) {
         composable(NavigationItem.Search.route) {
-            SearchScreen()
+            val searchViewModel = SearchViewModel()
+            SearchScreen(searchViewModel)
         }
         composable(NavigationItem.Favorites.route) {
             FavoritesScreen()
