@@ -28,42 +28,50 @@ val movies: MutableList<Movie> = mutableListOf(
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = false
     ),
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = true
     ),
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = true
     ),
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = false
     ),
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = false
     ),
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = true
     ),
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = false
     ),
     Movie(
         poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
         title = "Batman",
-        year = "1907"
+        year = "1907",
+        isFavorite = false
     ),
 )
 
@@ -72,12 +80,16 @@ fun SearchScreen(searchViewModel: SearchViewModel) {
     val uiState by searchViewModel.uiState.collectAsState()
 
     MovieAppTheme {
-        SearchContent(searchViewModel::searchByTitle, uiState.moviesList)
+        SearchContent(searchViewModel::searchByTitle, searchViewModel::updateIsFavorite, uiState.moviesList)
     }
 }
 
 @Composable
-fun SearchContent(searchByTitle: (String) -> Unit, moviesList: MutableList<Movie>) {
+fun SearchContent(
+    searchByTitle: (String) -> Unit,
+    updateIsFavorite: (Movie) -> Unit,
+    moviesList: MutableList<Movie>
+) {
     Box(
         modifier = Modifier
             .padding(top = 60.dp)
@@ -85,7 +97,7 @@ fun SearchContent(searchByTitle: (String) -> Unit, moviesList: MutableList<Movie
     ) {
         SearchMovieBar(searchByTitle)
         if (moviesList.isNotEmpty()) {
-            MoviesList(moviesList)
+            MoviesList(moviesList, updateIsFavorite)
         } else {
             Message()
         }
@@ -159,18 +171,18 @@ fun SearchMovieBar(searchByTitle: (String) -> Unit) {
 }
 
 @Composable
-fun MoviesList(moviesList: List<Movie> = emptyList()) {
+fun MoviesList(moviesList: List<Movie> = emptyList(), updateIsFavorite: (Movie) -> Unit) {
     Box(modifier = Modifier.padding(top = 70.dp, bottom = 50.dp)) {
         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
             items(items = moviesList) { movie ->
-                ListItem(movie)
+                ListItem(movie, updateIsFavorite)
             }
         }
     }
 }
 
 @Composable
-fun ListItem(movie: Movie) {
+fun ListItem(movie: Movie, updateIsFavorite: (Movie) -> Unit) {
     Surface(
         color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(vertical = 0.dp)
@@ -196,7 +208,8 @@ fun ListItem(movie: Movie) {
 
                 var moviePoster: String = movie.poster
                 if (moviePoster == "N/A") {
-                    moviePoster = "https://plantillasdememes.com/img/plantillas/imagen-no-disponible01601774755.jpg"
+                    moviePoster =
+                        "https://plantillasdememes.com/img/plantillas/imagen-no-disponible01601774755.jpg"
                 }
 
                 AsyncImage(
@@ -228,22 +241,23 @@ fun ListItem(movie: Movie) {
                         fontWeight = FontWeight.Light
                     )
                 }
-                FavoritesButton()
+                FavoritesButton(movie, updateIsFavorite)
             }
         }
     }
 }
 
 @Composable
-fun FavoritesButton() {
-    val isFavorite = remember { mutableStateOf(false) }
+fun FavoritesButton(movie: Movie, updateIsFavorite: (Movie) -> Unit) {
 
     IconButton(
         modifier = Modifier.padding(end = 16.dp),
-        onClick = { isFavorite.value = !isFavorite.value }
+        onClick = {
+            updateIsFavorite(movie)
+        }
     ) {
-        val icon = if (isFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-        val tint = if (isFavorite.value) Color.Red else Color.Gray
+        val icon = if (movie.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+        val tint = if (movie.isFavorite) Color.Red else Color.Gray
         Icon(
             imageVector = icon,
             contentDescription = "Favorite",
@@ -269,6 +283,6 @@ fun Message() {
 @Composable
 fun SearchView() {
     MovieAppTheme {
-        SearchContent({}, movies)
+        SearchContent({}, {}, movies)
     }
 }
