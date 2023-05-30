@@ -38,13 +38,24 @@ class SearchViewModel: ViewModel() {
                     .getMoviesByTitle("?s=$query&apikey=$API_KEY")
             val data: MovieResponse? = call.body()
             if(call.isSuccessful){
-                val movies = data?.search ?: emptyList()
+                val movies = data?.search ?: mutableListOf()
                 _uiState.update {
                     it.copy(moviesList = movies as MutableList<Movie>)
                 }
             } else {
                 Log.e("Error","Unsuccessful call")
             }
+        }
+    }
+
+    fun updateIsFavorite(movie: Movie) {
+        val moviesList = _uiState.value.moviesList
+        val index: Int = moviesList.indexOf(movie)
+        val newList = moviesList.toMutableList().apply {
+            this[index] = movie.copy(isFavorite = !movie.isFavorite)
+        }
+        _uiState.update {
+            it.copy(moviesList = newList)
         }
     }
 }
