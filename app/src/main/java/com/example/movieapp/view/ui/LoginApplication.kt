@@ -1,7 +1,7 @@
 package com.example.movieapp.view.ui
 
 import android.app.Application
-import com.example.movieapp.model.Prefs
+import com.example.movieapp.service.model.Prefs
 
 class LoginApplication: Application() {
     companion object{
