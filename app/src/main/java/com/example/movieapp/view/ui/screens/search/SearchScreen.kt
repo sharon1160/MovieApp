@@ -35,6 +35,7 @@ fun SearchScreen(
             searchViewModel::searchByTitle,
             searchViewModel::updateIsFavorite,
             favoriteMovieViewModel::insert,
+            favoriteMovieViewModel::deleteMovie,
             uiState.moviesList
         )
     }
@@ -45,6 +46,7 @@ fun SearchContent(
     searchByTitle: (String) -> Unit,
     updateIsFavorite: (Movie) -> Unit,
     insertFavoriteMovie: (Movie) -> Unit,
+    deleteFavoriteMovie: (Movie) -> Unit,
     moviesList: MutableList<Movie>
 ) {
     Box(
@@ -54,7 +56,7 @@ fun SearchContent(
     ) {
         SearchMovieBar(searchByTitle)
         if (moviesList.isNotEmpty()) {
-            MoviesList(moviesList, updateIsFavorite, insertFavoriteMovie)
+            MoviesList(moviesList, updateIsFavorite, insertFavoriteMovie, deleteFavoriteMovie)
         } else {
             Message()
         }
@@ -131,12 +133,13 @@ fun SearchMovieBar(searchByTitle: (String) -> Unit) {
 fun MoviesList(
     moviesList: List<Movie> = emptyList(),
     updateIsFavorite: (Movie) -> Unit,
-    insertFavoriteMovie: (Movie) -> Unit
+    insertFavoriteMovie: (Movie) -> Unit,
+    deleteFavoriteMovie: (Movie) -> Unit
 ) {
     Box(modifier = Modifier.padding(top = 70.dp, bottom = 50.dp)) {
         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
             items(items = moviesList) { movie ->
-                ListItem(movie, updateIsFavorite, insertFavoriteMovie)
+                ListItem(movie, updateIsFavorite, insertFavoriteMovie, deleteFavoriteMovie)
             }
         }
     }
@@ -146,7 +149,8 @@ fun MoviesList(
 fun ListItem(
     movie: Movie,
     updateIsFavorite: (Movie) -> Unit,
-    insertFavoriteMovie: (Movie) -> Unit
+    insertFavoriteMovie: (Movie) -> Unit,
+    deleteFavoriteMovie: (Movie) -> Unit
 ) {
     Surface(
         color = MaterialTheme.colorScheme.onPrimary,
@@ -206,7 +210,7 @@ fun ListItem(
                         fontWeight = FontWeight.Light
                     )
                 }
-                FavoritesButton(movie, updateIsFavorite, insertFavoriteMovie)
+                FavoritesButton(movie, updateIsFavorite, insertFavoriteMovie, deleteFavoriteMovie)
             }
         }
     }
@@ -216,13 +220,16 @@ fun ListItem(
 fun FavoritesButton(
     movie: Movie,
     updateIsFavorite: (Movie) -> Unit,
-    insertFavoriteMovie: (Movie) -> Unit
+    insertFavoriteMovie: (Movie) -> Unit,
+    deleteFavoriteMovie: (Movie) -> Unit
 ) {
     IconButton(
         modifier = Modifier.padding(end = 16.dp),
         onClick = {
             if(!movie.isFavorite){
                 insertFavoriteMovie(movie)
+            } else {
+                deleteFavoriteMovie(movie)
             }
             updateIsFavorite(movie)
         }

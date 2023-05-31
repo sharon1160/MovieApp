@@ -31,6 +31,12 @@ class FavoriteMovieViewModel(
         }
     }
 
+    fun deleteMovie(movie: Movie) {
+        viewModelScope.launch {
+            favoriteMovieRepository.deleteMovie(movie)
+        }
+    }
+
     fun getAllFavoriteMovieData(): List<Movie> {
         viewModelScope.launch {
             _uiState.update {

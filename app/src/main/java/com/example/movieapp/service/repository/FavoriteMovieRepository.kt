@@ -12,6 +12,10 @@ class FavoriteMovieRepository(
         favoriteMovieDao.insert(entity)
     }
 
+    suspend fun deleteMovie(movie: Movie) {
+        favoriteMovieDao.deleteMovieData(movie.title)
+    }
+
     suspend fun getAllFavoriteMovieData(): List<Movie> {
         val entities = favoriteMovieDao.getAllFavoriteMovieData()
         return entities.map {
