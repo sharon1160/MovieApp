@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
@@ -19,85 +18,36 @@ import coil.size.Scale
 import com.example.movieapp.service.model.Movie
 import com.example.movieapp.view.ui.theme.MovieAppTheme
 import com.example.movieapp.view.ui.theme.OpenSans
+import com.example.movieapp.viewmodel.FavoriteMovieViewModel
 import com.google.accompanist.pager.*
 import kotlin.math.absoluteValue
 
-val movies: MutableList<Movie> = mutableListOf(
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = true
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = true
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = true
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-)
-
 @Composable
-fun FavoritesScreen() {
+fun FavoritesScreen(favoriteMovieViewModel: FavoriteMovieViewModel) {
     MovieAppTheme {
-        FavoritesContent()
+        FavoritesContent(favoriteMovieViewModel::getAllFavoriteMovieData)
     }
 }
 
 @Composable
-fun FavoritesContent() {
+fun FavoritesContent(getFavorites: () -> List<Movie>) {
     Column(
         modifier = Modifier.padding(top = 20.dp)
     ) {
-        CarouselCard()
+        CarouselCard(getFavorites)
     }
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CarouselCard() {
+fun CarouselCard(getFavorites: () -> List<Movie>) {
     val pagerState = rememberPagerState(initialPage = 2)
+    val moviesList = getFavorites()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         HorizontalPager(
-            count = movies.size,
+            count = moviesList.size,
             state = pagerState,
             contentPadding = PaddingValues(horizontal = 80.dp),
             modifier = Modifier
@@ -133,7 +83,7 @@ fun CarouselCard() {
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(movies[page].poster)
+                            .data(moviesList[page].poster)
                             .crossfade(true)
                             .scale(Scale.FILL)
                             .build(),
@@ -146,20 +96,14 @@ fun CarouselCard() {
                         contentDescription = null
                     )
                     Text(
-                        text = movies[page].title,
+                        text = moviesList[page].title,
                         fontWeight = FontWeight.Bold,
                         fontFamily = OpenSans,
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    Text(text = movies[page].year, fontFamily = OpenSans)
+                    Text(text = moviesList[page].year, fontFamily = OpenSans)
                 }
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun FavoritesPreview() {
-    FavoritesContent()
 }
