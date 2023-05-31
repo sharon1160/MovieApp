@@ -11,9 +11,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.movieapp.service.model.FavoritesSingleton
 import com.example.movieapp.view.ui.theme.OpenSans
 import com.example.movieapp.viewmodel.LogoutViewModel
 import kotlinx.coroutines.launch
+
+private val favoritesSingleton = FavoritesSingleton
 
 @Composable
 fun LogoutScreen(
@@ -112,6 +115,7 @@ fun LogoutButton(
 ) {
     val scope = rememberCoroutineScope()
     Button(onClick = {
+        favoritesSingleton.clear()
         clearSession()
         scope.launch{
             drawerState.close()

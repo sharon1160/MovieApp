@@ -1,5 +1,6 @@
 package com.example.movieapp.view.ui.screens.search
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,10 +19,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.movieapp.service.model.FavoritesSingleton
 import com.example.movieapp.service.model.Movie
 import com.example.movieapp.view.ui.theme.MovieAppTheme
 import com.example.movieapp.viewmodel.FavoriteMovieViewModel
 import com.example.movieapp.viewmodel.SearchViewModel
+
+private val favoritesSingleton = FavoritesSingleton
 
 @Composable
 fun SearchScreen(
@@ -228,8 +232,10 @@ fun FavoritesButton(
         onClick = {
             if(!movie.isFavorite){
                 insertFavoriteMovie(movie)
+                favoritesSingleton.addMovie(movie)
             } else {
                 deleteFavoriteMovie(movie)
+                favoritesSingleton.removeMovie(movie)
             }
             updateIsFavorite(movie)
         }

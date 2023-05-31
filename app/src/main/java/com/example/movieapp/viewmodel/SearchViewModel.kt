@@ -2,6 +2,7 @@ package com.example.movieapp.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.movieapp.service.model.FavoritesSingleton
 import com.example.movieapp.service.model.Movie
 import com.example.movieapp.service.model.MovieResponse
 import com.example.movieapp.service.repository.APIService
@@ -24,6 +25,9 @@ class SearchViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val favoritesSingleton = FavoritesSingleton
+
+
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -39,13 +43,25 @@ class SearchViewModel: ViewModel() {
             val data: MovieResponse? = call.body()
             if(call.isSuccessful){
                 val movies = data?.search ?: mutableListOf()
+                val updatedMovies = updateMoviesList(movies)
                 _uiState.update {
-                    it.copy(moviesList = movies as MutableList<Movie>)
+                    it.copy(moviesList = updatedMovies as MutableList<Movie>)
                 }
             } else {
                 Log.e("Error","Unsuccessful call")
             }
         }
+    }
+
+    fun updateMoviesList(movies: List<Movie>): List<Movie>{
+        val updatedList = movies.map { movie ->
+            if (movie in favoritesSingleton.favorites) {
+                movie.copy(isFavorite = true)
+            } else {
+                movie
+            }
+        }
+        return updatedList
     }
 
     fun updateIsFavorite(movie: Movie) {
