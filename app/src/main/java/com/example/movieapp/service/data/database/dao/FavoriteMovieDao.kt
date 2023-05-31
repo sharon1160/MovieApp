@@ -13,4 +13,7 @@ interface FavoriteMovieDao {
 
     @Query("SELECT * FROM favorite_movie")
     suspend fun getAllFavoriteMovieData():List<FavoriteMovie>
+
+    @Query("DELETE FROM favorite_movie")
+    suspend fun deleteAllFavoriteMovieData()
 }

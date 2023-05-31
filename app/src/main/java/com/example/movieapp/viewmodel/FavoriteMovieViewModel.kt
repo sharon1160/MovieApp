@@ -39,4 +39,13 @@ class FavoriteMovieViewModel(
         }
         return uiState.value.favoritesList
     }
+
+    fun deleteAllFavoriteMovieData() {
+        viewModelScope.launch {
+            favoriteMovieRepository.deleteAllFavoriteMovieData()
+            _uiState.update {
+                it.copy(favoritesList = favoriteMovieRepository.getAllFavoriteMovieData())
+            }
+        }
+    }
 }

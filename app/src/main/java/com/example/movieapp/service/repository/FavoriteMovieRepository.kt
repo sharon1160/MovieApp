@@ -19,35 +19,7 @@ class FavoriteMovieRepository(
         }
     }
 
-
-    /*
-    companion object {
-        var favoriteMovieDatabase: FavoriteMovieDatabase? = null
-
-        private fun initializeDB(context: Context): FavoriteMovieDatabase?
-        {
-            return FavoriteMovieDatabase.getInstance(context)!!
-        }
-
-        fun insert(context: Context,favoriteMovie: FavoriteMovie)
-        {
-            favoriteMovieDatabase= initializeDB(context)
-
-            CoroutineScope(IO).launch {
-                favoriteMovieDatabase!!.favoriteMovieDao().insert(favoriteMovie)
-            }
-
-            Log.e("eeee","${favoriteMovie}")
-        }
-
-        fun getAllFavoriteMovieData(context: Context): List<FavoriteMovie>
-        {
-            favoriteMovieDatabase= initializeDB(context)
-            var query: List<FavoriteMovie> = listOf()
-            CoroutineScope(IO).launch {
-                query = favoriteMovieDatabase!!.favoriteMovieDao().getAllFavoriteMovieData()
-            }
-            return query
-        }
-    }*/
+    suspend fun deleteAllFavoriteMovieData() {
+        favoriteMovieDao.deleteAllFavoriteMovieData()
+    }
 }

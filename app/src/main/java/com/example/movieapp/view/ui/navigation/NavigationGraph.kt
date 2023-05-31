@@ -20,8 +20,9 @@ import com.example.movieapp.viewmodel.SearchViewModel
 @Composable
 fun NavigationGraph(navController: NavHostController) {
     val startRoute: String = getStartDestination()
+
     val localContext = LocalContext.current
-    val db = Room.databaseBuilder(localContext, FavoriteMovieDatabase::class.java, "user_db").build()
+    val db = Room.databaseBuilder(localContext, FavoriteMovieDatabase::class.java, "favorite_movie_db").build()
     val dao = db.dao
     val repository = FavoriteMovieRepository(dao)
     val favoriteMovieViewModel = FavoriteMovieViewModel(repository)
@@ -38,6 +39,7 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable("login") {
             val loginViewModel = LoginViewModel()
+            favoriteMovieViewModel.deleteAllFavoriteMovieData()
             LoginScreen(loginViewModel, navController)
         }
     }
