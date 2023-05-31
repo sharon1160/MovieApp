@@ -16,71 +16,27 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.movieapp.service.model.Movie
 import com.example.movieapp.view.ui.theme.MovieAppTheme
+import com.example.movieapp.viewmodel.FavoriteMovieViewModel
 import com.example.movieapp.viewmodel.SearchViewModel
 
-
-val movies: MutableList<Movie> = mutableListOf(
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = true
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = true
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = true
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-    Movie(
-        poster = "https://m.media-amazon.com/images/M/MV5BZDNjOGNhN2UtNmNhMC00YjU4LWEzMmUtNzRkM2RjN2RiMjc5XkEyXkFqcGdeQXVyMTU0OTM5ODc1._V1_SX300.jpg",
-        title = "Batman",
-        year = "1907",
-        isFavorite = false
-    ),
-)
-
 @Composable
-fun SearchScreen(searchViewModel: SearchViewModel) {
+fun SearchScreen(
+    searchViewModel: SearchViewModel,
+    favoriteMovieViewModel: FavoriteMovieViewModel
+) {
     val uiState by searchViewModel.uiState.collectAsState()
 
     MovieAppTheme {
-        SearchContent(searchViewModel::searchByTitle, searchViewModel::updateIsFavorite, uiState.moviesList)
+        SearchContent(
+            searchViewModel::searchByTitle,
+            searchViewModel::updateIsFavorite,
+            favoriteMovieViewModel::insert,
+            uiState.moviesList
+        )
     }
 }
 
@@ -88,6 +44,7 @@ fun SearchScreen(searchViewModel: SearchViewModel) {
 fun SearchContent(
     searchByTitle: (String) -> Unit,
     updateIsFavorite: (Movie) -> Unit,
+    insertFavoriteMovie: (Movie) -> Unit,
     moviesList: MutableList<Movie>
 ) {
     Box(
@@ -97,7 +54,7 @@ fun SearchContent(
     ) {
         SearchMovieBar(searchByTitle)
         if (moviesList.isNotEmpty()) {
-            MoviesList(moviesList, updateIsFavorite)
+            MoviesList(moviesList, updateIsFavorite, insertFavoriteMovie)
         } else {
             Message()
         }
@@ -171,18 +128,26 @@ fun SearchMovieBar(searchByTitle: (String) -> Unit) {
 }
 
 @Composable
-fun MoviesList(moviesList: List<Movie> = emptyList(), updateIsFavorite: (Movie) -> Unit) {
+fun MoviesList(
+    moviesList: List<Movie> = emptyList(),
+    updateIsFavorite: (Movie) -> Unit,
+    insertFavoriteMovie: (Movie) -> Unit
+) {
     Box(modifier = Modifier.padding(top = 70.dp, bottom = 50.dp)) {
         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
             items(items = moviesList) { movie ->
-                ListItem(movie, updateIsFavorite)
+                ListItem(movie, updateIsFavorite, insertFavoriteMovie)
             }
         }
     }
 }
 
 @Composable
-fun ListItem(movie: Movie, updateIsFavorite: (Movie) -> Unit) {
+fun ListItem(
+    movie: Movie,
+    updateIsFavorite: (Movie) -> Unit,
+    insertFavoriteMovie: (Movie) -> Unit
+) {
     Surface(
         color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(vertical = 0.dp)
@@ -241,18 +206,24 @@ fun ListItem(movie: Movie, updateIsFavorite: (Movie) -> Unit) {
                         fontWeight = FontWeight.Light
                     )
                 }
-                FavoritesButton(movie, updateIsFavorite)
+                FavoritesButton(movie, updateIsFavorite, insertFavoriteMovie)
             }
         }
     }
 }
 
 @Composable
-fun FavoritesButton(movie: Movie, updateIsFavorite: (Movie) -> Unit) {
-
+fun FavoritesButton(
+    movie: Movie,
+    updateIsFavorite: (Movie) -> Unit,
+    insertFavoriteMovie: (Movie) -> Unit
+) {
     IconButton(
         modifier = Modifier.padding(end = 16.dp),
         onClick = {
+            if(!movie.isFavorite){
+                insertFavoriteMovie(movie)
+            }
             updateIsFavorite(movie)
         }
     ) {
@@ -279,10 +250,3 @@ fun Message() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SearchView() {
-    MovieAppTheme {
-        SearchContent({}, {}, movies)
-    }
-}
