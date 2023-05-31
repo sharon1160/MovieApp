@@ -1,8 +1,5 @@
 package com.example.movieapp.service.model
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 object FavoritesSingleton {
     var favorites = mutableListOf<Movie>()
 
@@ -10,9 +7,8 @@ object FavoritesSingleton {
         favorites.add(movie)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun removeMovie(movie: Movie) {
-        favorites.removeIf { it.title == movie.title }
+        favorites = favorites.filter{ it.title != movie.title } as MutableList<Movie>
     }
 
     fun clear() {
