@@ -20,12 +20,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.movieapp.service.model.FavoritesSingleton
 import com.example.movieapp.service.model.Movie
+import com.example.movieapp.view.ui.screens.detail.DetailScreen
 import com.example.movieapp.view.ui.theme.MovieAppTheme
 import com.example.movieapp.viewmodel.FavoriteMovieViewModel
 import com.example.movieapp.viewmodel.SearchViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private val favoritesSingleton = FavoritesSingleton
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel,
@@ -34,15 +38,33 @@ fun SearchScreen(
     val uiState by searchViewModel.uiState.collectAsState()
 
     MovieAppTheme {
-        SearchContent(
-            searchViewModel::searchByTitle,
-            searchViewModel::updateIsFavorite,
-            favoriteMovieViewModel::insert,
-            favoriteMovieViewModel::deleteMovie,
-            uiState.moviesList
+        val scope = rememberCoroutineScope()
+        val bsScaffoldState = rememberBottomSheetScaffoldState(
+            SheetState(skipHiddenState = false, skipPartiallyExpanded = true)
         )
+        val onClickItem = {
+            scope.launch { bsScaffoldState.bottomSheetState.expand() }
+        }
+
+        BottomSheetScaffold(
+            scaffoldState = bsScaffoldState,
+            sheetPeekHeight = 178.dp,
+            sheetShape = MaterialTheme.shapes.large,
+            sheetContent = { DetailScreen(scope, bsScaffoldState, uiState.movieDetail) }
+        ) {
+            SearchContent(
+                searchViewModel::searchByTitle,
+                searchViewModel::updateIsFavorite,
+                favoriteMovieViewModel::insert,
+                favoriteMovieViewModel::deleteMovie,
+                searchViewModel::updateMovieDetail,
+                uiState.moviesList,
+                onClickItem
+            )
+        }
     }
 }
+
 
 @Composable
 fun SearchContent(
@@ -50,8 +72,11 @@ fun SearchContent(
     updateIsFavorite: (Movie) -> Unit,
     insertFavoriteMovie: (Movie) -> Unit,
     deleteFavoriteMovie: (Movie) -> Unit,
-    moviesList: MutableList<Movie>
+    updateMovieDetail: (Movie) -> Unit,
+    moviesList: MutableList<Movie>,
+    onClickItem: () -> Job
 ) {
+
     Box(
         modifier = Modifier
             .padding(top = 60.dp)
@@ -59,7 +84,14 @@ fun SearchContent(
     ) {
         SearchMovieBar(searchByTitle)
         if (moviesList.isNotEmpty()) {
-            MoviesList(moviesList, updateIsFavorite, insertFavoriteMovie, deleteFavoriteMovie)
+            MoviesList(
+                moviesList,
+                updateIsFavorite,
+                insertFavoriteMovie,
+                deleteFavoriteMovie,
+                updateMovieDetail,
+                onClickItem
+            )
         } else {
             Message()
         }
@@ -137,12 +169,21 @@ fun MoviesList(
     moviesList: List<Movie> = emptyList(),
     updateIsFavorite: (Movie) -> Unit,
     insertFavoriteMovie: (Movie) -> Unit,
-    deleteFavoriteMovie: (Movie) -> Unit
+    deleteFavoriteMovie: (Movie) -> Unit,
+    updateMovieDetail: (Movie) -> Unit,
+    onClickItem: () -> Job
 ) {
     Box(modifier = Modifier.padding(top = 70.dp, bottom = 50.dp)) {
         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
             items(items = moviesList) { movie ->
-                ListItem(movie, updateIsFavorite, insertFavoriteMovie, deleteFavoriteMovie)
+                ListItem(
+                    movie,
+                    updateIsFavorite,
+                    insertFavoriteMovie,
+                    deleteFavoriteMovie,
+                    updateMovieDetail,
+                    onClickItem
+                )
             }
         }
     }
@@ -153,7 +194,9 @@ fun ListItem(
     movie: Movie,
     updateIsFavorite: (Movie) -> Unit,
     insertFavoriteMovie: (Movie) -> Unit,
-    deleteFavoriteMovie: (Movie) -> Unit
+    deleteFavoriteMovie: (Movie) -> Unit,
+    updateMovieDetail: (Movie) -> Unit,
+    onClickItem: () -> Job
 ) {
     Surface(
         color = MaterialTheme.colorScheme.onPrimary,
@@ -175,6 +218,10 @@ fun ListItem(
                             end = Offset(size.width, size.height),
                             strokeWidth = 2.dp.toPx()
                         )
+                    }
+                    .clickable {
+                        updateMovieDetail(movie)
+                        onClickItem()
                     }
             ) {
 
@@ -213,7 +260,12 @@ fun ListItem(
                         fontWeight = FontWeight.Light
                     )
                 }
-                FavoritesButton(movie, updateIsFavorite, insertFavoriteMovie, deleteFavoriteMovie)
+                FavoritesButton(
+                    movie,
+                    updateIsFavorite,
+                    insertFavoriteMovie,
+                    deleteFavoriteMovie
+                )
             }
         }
     }
@@ -229,7 +281,7 @@ fun FavoritesButton(
     IconButton(
         modifier = Modifier.padding(end = 16.dp),
         onClick = {
-            if(!movie.isFavorite){
+            if (!movie.isFavorite) {
                 insertFavoriteMovie(movie)
                 favoritesSingleton.addMovie(movie)
             } else {
