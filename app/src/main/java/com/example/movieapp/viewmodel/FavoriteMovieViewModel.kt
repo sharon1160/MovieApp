@@ -54,4 +54,10 @@ class FavoriteMovieViewModel(
             }
         }
     }
+
+    fun updateMovieDetail(movie: Movie) {
+        _uiState.update {
+            it.copy(movieDetail = movie)
+        }
+    }
 }

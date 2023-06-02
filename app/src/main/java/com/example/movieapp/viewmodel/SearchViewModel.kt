@@ -74,4 +74,10 @@ class SearchViewModel: ViewModel() {
             it.copy(moviesList = newList)
         }
     }
+
+    fun updateMovieDetail(movie: Movie) {
+        _uiState.update {
+            it.copy(movieDetail = movie)
+        }
+    }
 }
