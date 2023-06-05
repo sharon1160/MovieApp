@@ -24,6 +24,7 @@ import com.example.movieapp.view.ui.screens.detail.DetailScreen
 import com.example.movieapp.view.ui.theme.MovieAppTheme
 import com.example.movieapp.view.ui.theme.OpenSans
 import com.example.movieapp.viewmodel.FavoriteMovieViewModel
+import com.example.movieapp.viewmodel.SearchViewModel
 import com.google.accompanist.pager.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -31,8 +32,9 @@ import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritesScreen(favoriteMovieViewModel: FavoriteMovieViewModel) {
+fun FavoritesScreen(favoriteMovieViewModel: FavoriteMovieViewModel, searchViewModel: SearchViewModel) {
     val uiState by favoriteMovieViewModel.uiState.collectAsState()
+    val searchUiState by searchViewModel.uiState.collectAsState()
 
     MovieAppTheme {
         val scope = rememberCoroutineScope()
@@ -47,10 +49,19 @@ fun FavoritesScreen(favoriteMovieViewModel: FavoriteMovieViewModel) {
             scaffoldState = bsScaffoldState,
             sheetPeekHeight = 178.dp,
             sheetShape = MaterialTheme.shapes.large,
-            sheetContent = { DetailScreen(scope, bsScaffoldState, uiState.movieDetail) }
+            sheetContent = {
+                DetailScreen(
+                    scope,
+                    bsScaffoldState,
+                    uiState.movieDetail,
+                    searchUiState.plotDetail,
+                    searchUiState.directorDetail
+                )
+            }
         ) {
             FavoritesContent(
                 favoriteMovieViewModel::getAllFavoriteMovieData,
+                searchViewModel::searchByMovie,
                 onClickItem,
                 favoriteMovieViewModel::updateMovieDetail
             )
@@ -61,13 +72,14 @@ fun FavoritesScreen(favoriteMovieViewModel: FavoriteMovieViewModel) {
 @Composable
 fun FavoritesContent(
     getFavorites: () -> List<Movie>,
+    searchByMovie: (String) -> Unit,
     onClickItem: () -> Job,
     updateMovieDetail: (Movie) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(top = 20.dp)
     ) {
-        CarouselCard(getFavorites, onClickItem, updateMovieDetail)
+        CarouselCard(getFavorites, searchByMovie, onClickItem, updateMovieDetail)
     }
 }
 
@@ -75,6 +87,7 @@ fun FavoritesContent(
 @Composable
 fun CarouselCard(
     getFavorites: () -> List<Movie>,
+    searchByMovie: (String) -> Unit,
     onClickItem: () -> Job,
     updateMovieDetail: (Movie) -> Unit
 ) {
@@ -95,6 +108,7 @@ fun CarouselCard(
                     .height(420.dp)
                     .width(250.dp)
                     .clickable {
+                        searchByMovie(moviesList[page].imdbID)
                         updateMovieDetail(moviesList[page])
                         onClickItem()
                     }
