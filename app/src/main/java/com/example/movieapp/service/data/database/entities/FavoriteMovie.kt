@@ -11,4 +11,5 @@ data class FavoriteMovie(
     @ColumnInfo(name = "poster") val poster: String,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "year") val year: String,
+    @ColumnInfo(name = "imdbID") val imdbID: String,
 )

@@ -12,5 +12,8 @@ data class Movie(
     @SerializedName("Year")
     var year: String,
 
+    @SerializedName("imdbID")
+    var imdbID: String,
+
     var isFavorite: Boolean = false
 )

@@ -8,7 +8,7 @@ class FavoriteMovieRepository(
     private val favoriteMovieDao: FavoriteMovieDao
 ) {
     suspend fun insert(movie: Movie) {
-        val entity = FavoriteMovie(poster = movie.poster, title = movie.title, year = movie.year)
+        val entity = FavoriteMovie(poster = movie.poster, title = movie.title, year = movie.year, imdbID = movie.imdbID)
         favoriteMovieDao.insert(entity)
     }
 
@@ -19,7 +19,7 @@ class FavoriteMovieRepository(
     suspend fun getAllFavoriteMovieData(): List<Movie> {
         val entities = favoriteMovieDao.getAllFavoriteMovieData()
         return entities.map {
-            Movie(poster = it.poster, title = it.title, year = it.year, isFavorite = true)
+            Movie(poster = it.poster, title = it.title, year = it.year, isFavorite = true, imdbID = it.imdbID)
         }
     }
 

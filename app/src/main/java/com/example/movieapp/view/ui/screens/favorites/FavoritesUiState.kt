@@ -6,7 +6,8 @@ data class FavoritesUiState(
     val movieDetail: Movie = Movie(
         poster = "https://plantillasdememes.com/img/plantillas/imagen-no-disponible01601774755.jpg",
         title = "--",
-        year = "--"
+        year = "--",
+        imdbID = "--"
     ),
     val favoritesList: List<Movie> = emptyList()
 )
