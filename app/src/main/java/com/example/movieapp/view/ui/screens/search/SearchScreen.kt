@@ -48,9 +48,9 @@ fun SearchScreen(
 
         BottomSheetScaffold(
             scaffoldState = bsScaffoldState,
-            sheetPeekHeight = 178.dp,
+            sheetPeekHeight = 128.dp,
             sheetShape = MaterialTheme.shapes.large,
-            sheetContent = { DetailScreen(scope, bsScaffoldState, uiState.movieDetail, uiState.plotDetail, uiState.directorDetail) }
+            sheetContent = { DetailScreen(uiState.movieDetail, uiState.plotDetail, uiState.directorDetail) }
         ) {
             SearchContent(
                 searchViewModel::searchByTitle,

@@ -47,12 +47,10 @@ fun FavoritesScreen(favoriteMovieViewModel: FavoriteMovieViewModel, searchViewMo
 
         BottomSheetScaffold(
             scaffoldState = bsScaffoldState,
-            sheetPeekHeight = 178.dp,
+            sheetPeekHeight = 128.dp,
             sheetShape = MaterialTheme.shapes.large,
             sheetContent = {
                 DetailScreen(
-                    scope,
-                    bsScaffoldState,
                     uiState.movieDetail,
                     searchUiState.plotDetail,
                     searchUiState.directorDetail
