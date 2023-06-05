@@ -31,7 +31,8 @@ fun NavigationGraph(navController: NavHostController) {
             SearchScreen(searchViewModel, favoriteMovieViewModel)
         }
         composable(NavigationItem.Favorites.route) {
-            FavoritesScreen(favoriteMovieViewModel)
+            val searchViewModel = SearchViewModel()
+            FavoritesScreen(favoriteMovieViewModel, searchViewModel)
         }
         composable("login") {
             val loginViewModel = LoginViewModel()
