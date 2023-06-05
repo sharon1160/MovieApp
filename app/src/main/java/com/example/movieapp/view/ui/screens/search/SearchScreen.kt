@@ -50,7 +50,7 @@ fun SearchScreen(
             scaffoldState = bsScaffoldState,
             sheetPeekHeight = 178.dp,
             sheetShape = MaterialTheme.shapes.large,
-            sheetContent = { DetailScreen(scope, bsScaffoldState, uiState.movieDetail) }
+            sheetContent = { DetailScreen(scope, bsScaffoldState, uiState.movieDetail, uiState.plotDetail, uiState.directorDetail) }
         ) {
             SearchContent(
                 searchViewModel::searchByTitle,
@@ -59,6 +59,7 @@ fun SearchScreen(
                 favoriteMovieViewModel::deleteMovie,
                 searchViewModel::updateMovieDetail,
                 uiState.moviesList,
+                searchViewModel::searchByMovie,
                 onClickItem
             )
         }
@@ -74,6 +75,7 @@ fun SearchContent(
     deleteFavoriteMovie: (Movie) -> Unit,
     updateMovieDetail: (Movie) -> Unit,
     moviesList: MutableList<Movie>,
+    searchByMovie: (String) -> Unit,
     onClickItem: () -> Job
 ) {
 
@@ -90,6 +92,7 @@ fun SearchContent(
                 insertFavoriteMovie,
                 deleteFavoriteMovie,
                 updateMovieDetail,
+                searchByMovie,
                 onClickItem
             )
         } else {
@@ -171,6 +174,7 @@ fun MoviesList(
     insertFavoriteMovie: (Movie) -> Unit,
     deleteFavoriteMovie: (Movie) -> Unit,
     updateMovieDetail: (Movie) -> Unit,
+    searchByMovie: (String) -> Unit,
     onClickItem: () -> Job
 ) {
     Box(modifier = Modifier.padding(top = 70.dp, bottom = 50.dp)) {
@@ -182,6 +186,7 @@ fun MoviesList(
                     insertFavoriteMovie,
                     deleteFavoriteMovie,
                     updateMovieDetail,
+                    searchByMovie,
                     onClickItem
                 )
             }
@@ -196,6 +201,7 @@ fun ListItem(
     insertFavoriteMovie: (Movie) -> Unit,
     deleteFavoriteMovie: (Movie) -> Unit,
     updateMovieDetail: (Movie) -> Unit,
+    searchByMovie: (String) -> Unit,
     onClickItem: () -> Job
 ) {
     Surface(
@@ -221,6 +227,7 @@ fun ListItem(
                     }
                     .clickable {
                         updateMovieDetail(movie)
+                        searchByMovie(movie.imdbID)
                         onClickItem()
                     }
             ) {

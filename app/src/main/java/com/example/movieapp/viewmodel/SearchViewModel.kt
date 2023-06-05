@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.movieapp.service.model.FavoritesSingleton
 import com.example.movieapp.service.model.Movie
+import com.example.movieapp.service.model.MovieDetailResponse
 import com.example.movieapp.service.model.MovieResponse
 import com.example.movieapp.service.repository.APIService
 import com.example.movieapp.view.ui.screens.search.SearchUiState
@@ -46,6 +47,24 @@ class SearchViewModel: ViewModel() {
                 val updatedMovies = updateMoviesList(movies)
                 _uiState.update {
                     it.copy(moviesList = updatedMovies as MutableList<Movie>)
+                }
+            } else {
+                Log.e("Error","Unsuccessful call")
+            }
+        }
+    }
+
+    fun searchByMovie(imdbID: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val call: Response<MovieDetailResponse> =
+                getRetrofit().create(APIService::class.java)
+                    .getMovieDetail("?i=$imdbID&apikey=$API_KEY")
+            val data: MovieDetailResponse? = call.body()
+            if(call.isSuccessful){
+                val plot = data?.plot ?: ""
+                val director = data?.Director ?: ""
+                _uiState.update {
+                    it.copy(plotDetail = plot, directorDetail = director)
                 }
             } else {
                 Log.e("Error","Unsuccessful call")

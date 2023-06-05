@@ -7,6 +7,9 @@ data class SearchUiState(
     val movieDetail: Movie = Movie(
         poster = "https://plantillasdememes.com/img/plantillas/imagen-no-disponible01601774755.jpg",
         title = "--",
-        year = "--"
-    )
+        year = "--",
+        imdbID = "--"
+    ),
+    val plotDetail: String = "",
+    val directorDetail: String = ""
 )

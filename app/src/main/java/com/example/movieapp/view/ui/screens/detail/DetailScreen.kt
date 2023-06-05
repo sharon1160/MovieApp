@@ -16,8 +16,14 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(scope: CoroutineScope, bsScaffoldState: BottomSheetScaffoldState, movie: Movie) {
-    DetailContent(scope, bsScaffoldState, movie)
+fun DetailScreen(
+    scope: CoroutineScope,
+    bsScaffoldState: BottomSheetScaffoldState,
+    movie: Movie,
+    plot: String,
+    director: String
+) {
+    DetailContent(scope, bsScaffoldState, movie, plot, director)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,12 +31,14 @@ fun DetailScreen(scope: CoroutineScope, bsScaffoldState: BottomSheetScaffoldStat
 fun DetailContent(
     scope: CoroutineScope,
     bsScaffoldState: BottomSheetScaffoldState,
-    movie: Movie
+    movie: Movie,
+    plot: String,
+    director: String
 ) {
     Row(
         Modifier
             .fillMaxWidth()
-            .height(128.dp)
+            .height(220.dp)
             .padding(20.dp)
     ) {
 
@@ -63,9 +71,14 @@ fun DetailContent(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = movie.year,
+                text = "${movie.year} | $director",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Light
+            )
+            Text(
+                text = plot,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
             )
         }
     }
